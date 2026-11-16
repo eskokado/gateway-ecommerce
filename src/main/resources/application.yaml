@@ -1,3 +1,39 @@
+server.port: 9999
+
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+    reactor.netty.http.client: DEBUG
+
 spring:
   application:
     name: gateway-ecommerce
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: billing-route
+              uri: http://localhost:8082
+              predicates:
+                - Path=/api/v1/customers/me/orders/{orderId}/invoice
+                - Method=GET
+            - id: ordering-route
+              uri: http://localhost:8080
+              predicates:
+                - Path=/api/v1/orders/**,/api/v1/customers/**
+            - id: product-catalog-route
+              uri: http://localhost:8084
+              predicates:
+                - Path=/api/v1/products/**,/api/v1/categories/**
+                - Method=GET,POST,PUT,DELETE,OPTIONS
+            - id: product-catalog-test-route
+              uri: http://localhost:8084
+              predicates:
+                - Path=/products/**
+              filters:
+                - RewritePath=/products(?<segment>/.*)?, /api/v1/products$\{segment}
+#                - name: RewritePath
+#                  args:
+#                    regexp: /products/?(?<segment>.*)
+#                    replacement: /api/v1/products$\{segment}
