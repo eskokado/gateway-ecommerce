@@ -37,3 +37,10 @@ spring:
 #                  args:
 #                    regexp: /products/?(?<segment>.*)
 #                    replacement: /api/v1/products$\{segment}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+    registerWithEureka: false
+    fetchRegistry: true
