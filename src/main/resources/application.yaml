@@ -41,7 +41,7 @@ spring:
                 - Path=/api/v1/products/**,/api/v1/categories/**
                 - Method=GET,POST,PUT,DELETE,OPTIONS
             - id: product-catalog-test-route
-              uri: http://localhost:8084
+              uri: lb://product-catalog
               predicates:
                 - Path=/products/**
               filters:
