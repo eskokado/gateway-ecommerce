@@ -8,6 +8,11 @@ logging:
 spring:
   application:
     name: gateway-ecommerce
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://auth.algashop.local:8081
   cloud:
     gateway:
       server:
@@ -58,3 +63,12 @@ eureka:
       defaultZone: http://localhost:8761/eureka
     registerWithEureka: false
     fetchRegistry: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, gateway
+  endpoint:
+    gateway:
+      enabled: true
