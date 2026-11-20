@@ -14,6 +14,7 @@ public class GatewayEcommerceSecurityConfig {
 		http.csrf(ServerHttpSecurity.CsrfSpec::disable)
 				.authorizeExchange(authorize -> authorize
 						.pathMatchers("/actuator/health").permitAll()
+						.pathMatchers("/api/v1/webhooks/**").permitAll()
 						.pathMatchers("/api/**").authenticated()
 						.anyExchange().denyAll()
 				)
