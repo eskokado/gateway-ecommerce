@@ -19,18 +19,32 @@ spring:
         webflux:
           default-filters:
             - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY, INTERNAL_SERVER_ERROR, GATEWAY_TIMEOUT
+                methods: GET,PUT
+                exceptions: java.io.IOException, org.springframework.cloud.gateway.support.TimeoutException
+                backoff:
+                  firstBackoff: 10ms
+                  maxBackoff: 20ms
+                  factor: 2
+                  basedOnPreviousValue: false
+          httpclient:
+            connect-timeout: 1000
+            response-timeout: 5000
           globalcors:
             add-to-simple-url-handler-mapping: true
             cors-configurations:
-              '[/**]':
-                  allowedOrigins: http://localhost:4200
-                  allowedHeaders: '*'
-                  allowedMethods:
-                    - GET
-                    - POST
-                    - PUT
-                    - DELETE
-                    - OPTIONS
+              "[/**]":
+                allowedOrigins: http://localhost:4200
+                allowedHeaders: "*"
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - DELETE
+                  - OPTIONS
           routes:
             - id: billing-route
               uri: lb://billing
@@ -61,6 +75,9 @@ spring:
               filters:
                 - RewritePath=/products(?<segment>/.*)?, /api/v1/products$\{segment}
                 - AddResponseHeader=X-Path-rewrite-info, Path have been rewrite to /api/v1/products
+              metadata:
+                response-timeout: 1000
+                connect-timeout: 1000
             - id: user-management-route
               uri: lb://authorization-server
               predicates:
